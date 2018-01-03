@@ -12,12 +12,12 @@ TunnelServer.prototype.start = function (server, port) {
 
 TunnelServer.prototype.handleClient = function (client) {
   if (this.client) {
-    this.handleHandshake(client);
+    this.verifyHandshake(client);
     return;
   }
   this.client = client;
   console.log('client connected');
-  client.on('close', () => {
+  client.on('disconnect', () => {
     console.log('client disconnected');
     this.client = undefined;
   });
@@ -25,10 +25,11 @@ TunnelServer.prototype.handleClient = function (client) {
 
 let connectionReq = {};
 
-TunnelServer.prototype.handleHandshake = function (client) {
+TunnelServer.prototype.verifyHandshake = function (client) {
   client.on('handshake', stamp => {
     if (connectionReq[stamp])
       connectionReq[stamp](client);
+    client.on('disconnect', () => delete connectionReq[stamp]);
   });
 }
 

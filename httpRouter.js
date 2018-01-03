@@ -30,9 +30,9 @@ HttpRouter.prototype.requestRouter = function (tunnel, req, res) {
 
   let bindArgsTo = (fun, ...arg) => fun.bind(null, ...arg);
 
-  tunnel.on('statusCode', bindArgTo(setStatusCode, res));
-  tunnel.on('headers', bindArgTo(sendHeaders, res));
-  tunnel.on('data', bindArgTo(writeDataToResponse, res));
+  tunnel.on('statusCode', bindArgsTo(setStatusCode, res));
+  tunnel.on('headers', bindArgsTo(sendHeaders, res));
+  tunnel.on('data', bindArgsTo(writeDataToResponse, res));
   tunnel.on('end', ()=>res.end());
   tunnel.on('end', ()=>tunnel.disconnect(true));
 }
