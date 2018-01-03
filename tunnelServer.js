@@ -1,4 +1,4 @@
-let SocketServer = require('ws').Server;
+let socketServer = require('socket.io');
 
 const TunnelServer = function () {
   this.client = undefined;
@@ -6,12 +6,16 @@ const TunnelServer = function () {
 }
 
 TunnelServer.prototype.start = function (server, port) {
-  this.server = new SocketServer({ server });
-  this.server.on('connection', client => this.handleClient(client));
+  this.server = socketServer(server);
+  this.server.on('connect', client => this.handleClient(client));
 };
 
 TunnelServer.prototype.handleClient = function (client) {
-  this.client = this.client || client;
+  if (this.client) {
+    this.handleHandshake(client);
+    return;
+  }
+  this.client = client;
   console.log('client connected');
   client.on('close', () => {
     console.log('client disconnected');
@@ -21,16 +25,17 @@ TunnelServer.prototype.handleClient = function (client) {
 
 let connectionReq = {};
 
+TunnelServer.prototype.handleHandshake = function (client) {
+  client.on('handshake', stamp => {
+    if (connectionReq[stamp])
+      connectionReq[stamp](client);
+  });
+}
+
 TunnelServer.prototype.createNewConnection = function (onConnection) {
-  let stamp = new Date().getTime();
+  let stamp = new Date().getTime() + Math.floor(Math.random() * 100000);
   connectionReq[stamp] = onConnection;
-  this.client.ping(`${stamp}`);
-  this.handleClient = client => {
-    client.on('ping', stamp => {
-      if (connectionReq[stamp])
-        connectionReq[stamp](client);
-    });
-  };
+  this.client.emit('handshake', `${stamp}`);
 };
 
 module.exports = TunnelServer;

@@ -23,38 +23,27 @@ HttpRouter.prototype.getServer = function () {
 }
 
 HttpRouter.prototype.requestRouter = function (tunnel, req, res) {
-  sendToTunnel(tunnel, req.url);
-  sendToTunnel(tunnel, req.method);
-  sendToTunnel(tunnel, JSON.stringify(req.headers));
+  tunnel.emit('url', req.url);
+  tunnel.emit('method', req.method);
+  tunnel.emit('headers', JSON.stringify(req.headers));
   sendStreamDataToTunnel(req, tunnel);
 
-  let responders = [sendHeaders, writeDataToResponse];
-  let currentResponder = setStatusCode;
+  let bindArgsTo = (fun, ...arg) => fun.bind(null, ...arg);
 
-  tunnel.on('message', function (message) {
-    currentResponder(res, message);
-  });
-
-  tunnel.on('ping', function () {
-    currentResponder = responders.shift();
-    if (!currentResponder) {
-      res.end();
-    };
-  });
+  tunnel.on('statusCode', bindArgTo(setStatusCode, res));
+  tunnel.on('headers', bindArgTo(sendHeaders, res));
+  tunnel.on('data', bindArgTo(writeDataToResponse, res));
+  tunnel.on('end', ()=>res.end());
+  tunnel.on('end', ()=>tunnel.disconnect(true));
 }
 
 const sendStreamDataToTunnel = function (req, tunnel) {
   req.on('data', (data) => {
-    tunnel.send(data);
+    tunnel.emit('data',data);
   });
   req.on('end', () => {
-    tunnel.ping();
+    tunnel.emit('end');
   });
-}
-
-const sendToTunnel = (tunnel, data) => {
-  tunnel.send(data);
-  tunnel.ping();
 }
 
 const writeDataToResponse = (res, data) => {

@@ -13,6 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ws": "1.1.0"
+    "socket.io": "^2.0.4"
   }
 }
