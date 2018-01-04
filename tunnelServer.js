@@ -33,9 +33,13 @@ TunnelServer.prototype.verifyHandshake = function (client) {
   });
 }
 
-TunnelServer.prototype.createNewConnection = function (onConnection) {
+TunnelServer.prototype.createNewConnection = function (onConnection, onError) {
   let id =`${Math.floor(Math.random() * 100)}${new Date().getTime()}`;
   activeConnections[id] = onConnection;
+  if(!this.client){
+    onError('No connection to server');
+    return;
+  }
   this.client.emit('handshake', `${id}`);
 };
 

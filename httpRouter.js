@@ -9,6 +9,8 @@ HttpRouter.prototype.createServer = function () {
   this.server = http.createServer((req, res) => {
     this.tunnelServer.createNewConnection((client) => {
       this.requestRouter(client, req, res);
+    }, (err) => {
+      this.sendErrorResponse(req, res, err);
     });
   });
 }
@@ -22,6 +24,12 @@ HttpRouter.prototype.getServer = function () {
   return this.server;
 }
 
+HttpRouter.prototype.sendErrorResponse = function (req, res, err) {
+  res.statusCode = 404;
+  res.write(err);
+  res.end();
+}
+
 HttpRouter.prototype.requestRouter = function (tunnel, req, res) {
   tunnel.emit('url', req.url);
   tunnel.emit('method', req.method);
@@ -33,13 +41,13 @@ HttpRouter.prototype.requestRouter = function (tunnel, req, res) {
   tunnel.on('statusCode', bindArgsTo(setStatusCode, res));
   tunnel.on('headers', bindArgsTo(sendHeaders, res));
   tunnel.on('data', bindArgsTo(writeDataToResponse, res));
-  tunnel.on('end', ()=>res.end());
-  tunnel.on('end', ()=>tunnel.disconnect(true));
+  tunnel.on('end', () => res.end());
+  tunnel.on('end', () => tunnel.disconnect(true));
 }
 
 const sendStreamDataToTunnel = function (req, tunnel) {
   req.on('data', (data) => {
-    tunnel.emit('data',data);
+    tunnel.emit('data', data);
   });
   req.on('end', () => {
     tunnel.emit('end');
