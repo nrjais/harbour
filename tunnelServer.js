@@ -23,20 +23,20 @@ TunnelServer.prototype.handleClient = function (client) {
   });
 };
 
-let connectionReq = {};
+let activeConnections = {};
 
 TunnelServer.prototype.verifyHandshake = function (client) {
   client.on('handshake', stamp => {
-    if (connectionReq[stamp])
-      connectionReq[stamp](client);
-    client.on('disconnect', () => delete connectionReq[stamp]);
+    if (activeConnections[stamp])
+      activeConnections[stamp](client);
+    client.on('disconnect', () => delete activeConnections[stamp]);
   });
 }
 
 TunnelServer.prototype.createNewConnection = function (onConnection) {
-  let stamp = new Date().getTime() + Math.floor(Math.random() * 100000);
-  connectionReq[stamp] = onConnection;
-  this.client.emit('handshake', `${stamp}`);
+  let id =`${Math.floor(Math.random() * 100)}${new Date().getTime()}`;
+  activeConnections[id] = onConnection;
+  this.client.emit('handshake', `${id}`);
 };
 
 module.exports = TunnelServer;
