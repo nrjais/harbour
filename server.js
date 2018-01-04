@@ -1,12 +1,16 @@
-const HttpRouter = require('./httpRouter');
-const TunnelServer = require('./tunnelServer');
+//This is a expample server
 
-const PORT = process.env.PORT || 3000;
+const TunnelServer = require('./index.js');
+const http = require('http');
 
-let tunnelServer = new TunnelServer(); 
+let PORT = 3000;
 
-let httpRouter = new HttpRouter(tunnelServer);
-httpRouter.createServer();
+let server = http.createServer(function (req, res) {
+  requestRouter(req, res);
+});
 
-tunnelServer.start(httpRouter.getServer(), PORT);
-httpRouter.startServer(PORT);
+let tunnel = new TunnelServer();
+let requestRouter = tunnel.createServer(server);
+
+server.listen(PORT);
+console.log(`listening on PORT ${PORT}`);
