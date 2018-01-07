@@ -1,6 +1,6 @@
 //This is a expample server
 
-const TunnelServer = require('./index.js');
+const TunnelServer = require('harbour-server');
 const http = require('http');
 
 let PORT = 3000;

@@ -1,18 +1,24 @@
 {
-  "name": "req-tunnel",
+  "name": "harbour-server",
   "version": "1.0.0",
   "engines": {
     "node": "6.2.0"
   },
-  "description": "",
+  "description": "A tunneling package to tunnel your pulic domain requests to localhost",
   "main": "index.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
+    "nodemon": "^1.14.8",
     "socket.io": "^2.0.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nrjais/harbour.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nrjais/harbour/issues"
+  },
+  "homepage": "https://nrjais.github.io/harbour/",
+  "keywords": [],
+  "author": "nrjais"
 }
