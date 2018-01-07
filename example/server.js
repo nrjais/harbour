@@ -10,7 +10,7 @@ let server = http.createServer(function (req, res) {
 });
 
 let tunnel = new TunnelServer();
-let requestRouter = tunnel.createServer(server);
+let requestRouter = tunnel.createRouter(server);
 
 server.listen(PORT);
 console.log(`listening on PORT ${PORT}`);

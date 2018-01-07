@@ -19,6 +19,12 @@
     "url": "https://github.com/nrjais/harbour/issues"
   },
   "homepage": "https://nrjais.github.io/harbour/",
-  "keywords": [],
+  "keywords": [
+    "tunneling",
+    "localhost",
+    "transfer",
+    "http tunneling",
+    "harbour"
+  ],
   "author": "nrjais"
 }
